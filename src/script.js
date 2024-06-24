@@ -12,7 +12,11 @@ import { Timer } from 'three/examples/jsm/misc/Timer.js';
 import { MeshGouraudMaterial } from 'three/examples/jsm/materials/MeshGouraudMaterial.js';
 //import url from './static/Snow010A_4K-PNG_AmbientOcclusion.png'
 import { Sky } from "three/examples/jsm/objects/Sky.js";
-
+import { AudioLoader } from 'three';
+import { AudioListener } from 'three';
+import { Audio } from 'three';
+//import songUrl from './static/space-radio-interference-24866.mp3'
+import {StereoEffect} from 'three/examples/jsm/effects/StereoEffect.js'
 
 const gui  = new GUI();
 
@@ -22,20 +26,24 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene;
 
+// Audio
+//const audioLoader = new THREE.AudioLoader();
+
+
 /**
  *   Textures
- */
+*/
 const textureLoader = new THREE.TextureLoader()
 
 let texture = new THREE.CanvasTexture(new FlakesTexture());
 
 
 // Floor
-const floorAlphaTexture = textureLoader.load('./static/jason-clarke-moonlight-srgb-no-tags.webp');
-const floorColorTexture = textureLoader.load('./static/coast_sand_rocks_02_diff_1k.webp');
-const floorARMTexture = textureLoader.load('./static/coast_sand_rocks_02_arm_1k.webp');
-const floorNormalTexture = textureLoader.load('./static/coast_sand_rocks_02_nor_gl_1k.webp');
-const floorDisplacementTexture = textureLoader.load('./static/coast_sand_rocks_02_disp_1k.webp');
+const floorAlphaTexture = textureLoader.load('./jason-clarke-moonlight-srgb-no-tags.webp');
+const floorColorTexture = textureLoader.load('./coast_sand_rocks_02_diff_1k.webp');
+const floorARMTexture = textureLoader.load('./coast_sand_rocks_02_arm_1k.webp');
+const floorNormalTexture = textureLoader.load('./coast_sand_rocks_02_nor_gl_1k.webp');
+const floorDisplacementTexture = textureLoader.load('./coast_sand_rocks_02_disp_1k.webp');
 
 floorColorTexture.colorSpace = THREE.SRGBColorSpace;
 
@@ -57,16 +65,16 @@ floorNormalTexture.wrapT = THREE.RepeatWrapping
 floorDisplacementTexture.wrapT = THREE.RepeatWrapping
 
 // Wall
-const wallColorTexture = textureLoader.load('./static/castle_brick_broken_06_diff_1k.webp')
-const wallARMTexture = textureLoader.load('./static/castle_brick_broken_06_arm_1k.webp')
-const wallNormalTexture = textureLoader.load('./static/castle_brick_broken_06_nor_gl_1k.webp')
+const wallColorTexture = textureLoader.load('./castle_brick_broken_06_diff_1k.webp')
+const wallARMTexture = textureLoader.load('./castle_brick_broken_06_arm_1k.webp')
+const wallNormalTexture = textureLoader.load('./castle_brick_broken_06_nor_gl_1k.webp')
 
 wallColorTexture.colorSpace = THREE.SRGBColorSpace;
 
 // Roof
-const roofColorTexture = textureLoader.load('./static/roof_slates_02_diff_1k.webp')
-const roofARMTexture = textureLoader.load('./static/roof_slates_02_arm_1k.webp')
-const roofNormalTexture = textureLoader.load('./static/roof_slates_02_nor_gl_1k.webp')
+const roofColorTexture = textureLoader.load('./roof_slates_02_diff_1k.webp')
+const roofARMTexture = textureLoader.load('./roof_slates_02_arm_1k.webp')
+const roofNormalTexture = textureLoader.load('./roof_slates_02_nor_gl_1k.webp')
 
 roofColorTexture.colorSpace = THREE.SRGBColorSpace
 roofColorTexture.repeat.set(3, 1)
@@ -79,9 +87,9 @@ roofNormalTexture.wrapS = THREE.RepeatWrapping
 
 
 // Bush
-const bushColorTexture = textureLoader.load('./static/leaves_forest_ground_diff_1k.webp');
-const bushARMTexture = textureLoader.load('./static/leaves_forest_ground_arm_1k.webp');
-const bushNormalTexture = textureLoader.load('./static/leaves_forest_ground_nor_gl_1k.webp');
+const bushColorTexture = textureLoader.load('./leaves_forest_ground_diff_1k.webp');
+const bushARMTexture = textureLoader.load('./leaves_forest_ground_arm_1k.webp');
+const bushNormalTexture = textureLoader.load('./leaves_forest_ground_nor_gl_1k.webp');
 
 bushColorTexture.colorSpace = THREE.SRGBColorSpace;
 
@@ -95,9 +103,9 @@ bushNormalTexture.wrapS = THREE.RepeatWrapping
 
 
 // Grave
-const graveColorTexture = textureLoader.load('./grave/plastered_stone_wall_diff_1k.webp')
-const graveARMTexture = textureLoader.load('./grave/plastered_stone_wall_arm_1k.webp')
-const graveNormalTexture = textureLoader.load('./grave/plastered_stone_wall_nor_gl_1k.webp')
+const graveColorTexture = textureLoader.load('./plastered_stone_wall_diff_1k.webp')
+const graveARMTexture = textureLoader.load('./plastered_stone_wall_arm_1k.webp')
+const graveNormalTexture = textureLoader.load('./plastered_stone_wall_nor_gl_1k.webp')
 
 graveColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -106,13 +114,13 @@ graveARMTexture.repeat.set(0.3, 0.4)
 graveNormalTexture.repeat.set(0.3, 0.4)
 
 // Door
-const doorColorTexture = textureLoader.load('./static/wooden_garage_door_diff_1k.webp')
-const doorAlphaTexture = textureLoader.load('./static/Snow010A.webp')
-const doorAmbientOcclusionTexture = textureLoader.load('./static/wooden_garage_door_diff_1k.webp')
-const doorHeightTexture = textureLoader.load('./static/wooden_garage_door_disp_1k.webp')
-const doorNormalTexture = textureLoader.load('./static/wooden_garage_door_nor_gl_1k.webp')
-const doorMetalnessTexture = textureLoader.load('./static/wooden_garage_door_arm_1k.webp')
-const doorRoughnessTexture = textureLoader.load('./static/wooden_garage_door_arm_1k.webp')
+const doorColorTexture = textureLoader.load('./wooden_garage_door_diff_1k.webp')
+const doorAlphaTexture = textureLoader.load('./Snow010A.webp')
+const doorAmbientOcclusionTexture = textureLoader.load('./wooden_garage_door_diff_1k.webp')
+const doorHeightTexture = textureLoader.load('./wooden_garage_door_disp_1k.webp')
+const doorNormalTexture = textureLoader.load('./wooden_garage_door_nor_gl_1k.webp')
+const doorMetalnessTexture = textureLoader.load('./wooden_garage_door_arm_1k.webp')
+const doorRoughnessTexture = textureLoader.load('./wooden_garage_door_arm_1k.webp')
 
 doorColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -128,6 +136,61 @@ gui.add(ambientLight, 'intensity').min(0).max(3).step(0.001);
 const directionalLight = new THREE.DirectionalLight('grey', 1)
 directionalLight.position.set(3, 2, -7);
 scene.add(directionalLight);
+
+const listener = new AudioListener();
+
+
+// create a global audio source
+const sound = new Audio(listener);  
+
+
+// load a sound and set it as the Audio object's buffer
+//const audioLoader = new THREE.AudioLoader();
+
+const audioLoader = new AudioLoader();
+audioLoader.load('./space-radio-interference-24866.mp3', function(buffer) {
+ sound.setBuffer(buffer);
+ sound.setLoop(true);
+ sound.setVolume(0.5);
+});
+
+
+// add a button to the DOM to play the sound
+const button = document.createElement('button');
+button.className = 'btn';
+button.innerText = 'Play Sound';
+button.style.position = 'absolute';
+button.style.top = '10px';
+button.style.left = '10px';
+button.style.zIndex = '999';
+document.body.appendChild(button);
+
+
+
+button.addEventListener('click', () => {
+  sound.play();
+
+  
+  // optionally remove the button after the sound starts playing
+});
+
+const btn = document.createElement('button');
+btn.innerText = 'Pause';
+btn.style.position = 'absolute';
+btn.style.top = '10px';
+btn.style.left = '120px';
+btn.style.zIndex = '999';
+document.body.appendChild(btn);
+
+btn.addEventListener('click', () => {
+    sound.pause();
+})
+
+const soundControl = {volume: 50 };
+
+gui.add(soundControl, 'volume', 0, 100).onChange((value) => {
+ sound.setVolume(value / 100);
+});
 
 
 
@@ -318,10 +381,7 @@ window.addEventListener('resize', () => {
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
 
-//     // Update Camera
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
-
+//  
     // Update renderer
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -339,6 +399,15 @@ camera.position.z = 3;
 scene.add(camera);
 
 
+   // Update Camera
+   camera.aspect = sizes.width / sizes.height;
+   camera.updateProjectionMatrix();
+
+  
+
+camera.add(audioLoader);
+
+   
 // COntrols
  const controls = new OrbitControls(camera, canvas);
  controls.enableDamping = true;
